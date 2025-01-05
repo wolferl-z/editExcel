@@ -1,4 +1,4 @@
-('C:\\Users\\13955\\getData\\pythonProject\\build\\打表工具\\PYZ-00.pyz',
+('C:\\Users\\13955\\getData\\editExcel\\build\\打表工具\\PYZ-00.pyz',
  [('__future__',
    'C:\\Users\\13955\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\__future__.py',
    'PYMODULE'),
