@@ -4,10 +4,11 @@ import pandas as pd
 import os
 import subprocess
 import platform
+from decimal import Decimal, ROUND_UP
 
 
 # 处理 Excel 文件的函数
-def process_excel(file_path, word_to_add, series_name):
+def process_excel(file_path, word_to_add, series_name, postage_fee):
     try:
         # 读取 Excel 文件，保留所有原始数据（header=None）
         df = pd.read_excel(file_path, header=None)
@@ -47,10 +48,34 @@ def process_excel(file_path, word_to_add, series_name):
         df_first_three_columns.columns = ['金额', 'cn', '制品']
 
         # 创建一个新的 DataFrame，作为新文件的第一行
-        header_row = pd.DataFrame([[series_name + (word_to_add if word_to_add else ""), "", ""]], columns=df_first_three_columns.columns)
+        header_row = pd.DataFrame([[series_name + (word_to_add if word_to_add else ""), "", ""]],
+                                  columns=df_first_three_columns.columns)
 
         # 将新的第一行插入到现有 DataFrame 中，作为列名行之上
         df_first_three_columns = pd.concat([header_row, df_first_three_columns], ignore_index=True)
+
+        # 统计第二列第三行开始的单元格个数
+        valid_cells_count = df_first_three_columns.iloc[1:, 1].count()  # 第二列从第三行开始的非空单元格数量
+
+        # 计算人均邮费
+        if postage_fee > 0 and valid_cells_count > 0:
+            # 使用 Decimal 来处理邮费，并进行进位
+            average_postage = Decimal(float(postage_fee)) / Decimal(float(valid_cells_count))
+            # 将结果保留两位小数并进行进位
+            average_postage = average_postage.quantize(Decimal('0.01'), rounding=ROUND_UP)
+
+            # 将人均邮费插入到第二行第二列单元格
+            df_first_three_columns.iloc[0, 1] = f"邮{average_postage}/人"  # 保留两位小数并进位处理
+
+            # 对第一列从第二行开始的每个单元格加上人均邮费
+            for row_idx in range(1, len(df_first_three_columns)):
+                original_value = df_first_three_columns.iloc[row_idx, 0]
+                # 如果原值是数字，则添加邮费
+                if isinstance(original_value, (int, float)):
+                    # 计算最终金额（原金额 + 人均邮费）
+                    final_amount = Decimal(original_value) + average_postage
+                    # 更新金额列，保留两位小数并进位
+                    df_first_three_columns.iloc[row_idx, 0] = final_amount.quantize(Decimal('0.01'), rounding=ROUND_UP)
 
         # 动态生成文件名，结合输入的系列名和词语
         output_file_name = f"{series_name}{word_to_add if word_to_add else ''}.xlsx"
@@ -90,13 +115,18 @@ def run_processing():
     file_path = file_entry.get()
     word_to_add = word_entry.get()
     series_name = series_entry.get()
+    try:
+        postage_fee = float(postage_entry.get())  # 获取邮费输入并转换为浮动类型
+    except ValueError:
+        messagebox.showwarning("输入错误", "邮费必须是一个数字！")
+        return
 
     # 验证输入
     if not file_path or not series_name:
         messagebox.showwarning("输入错误", "请确保输入文件路径和系列名！")
         return
 
-    process_excel(file_path, word_to_add, series_name)
+    process_excel(file_path, word_to_add, series_name, postage_fee)
 
 
 # 创建主窗口
@@ -109,7 +139,7 @@ screen_height = root.winfo_screenheight()
 
 # 设置窗口的大小
 window_width = 550
-window_height = 200
+window_height = 250
 
 # 计算窗口位置，使其居中
 position_top = (screen_height - window_height) // 2
@@ -128,7 +158,6 @@ file_entry.grid(row=0, column=1, padx=10, pady=10)
 browse_button = tk.Button(root, text="浏览", command=browse_file)
 browse_button.grid(row=0, column=2, padx=10, pady=10)
 
-
 # 系列名输入框
 series_label = tk.Label(root, text="输入系列名:")
 series_label.grid(row=1, column=0, padx=10, pady=10, sticky="w")
@@ -143,9 +172,16 @@ word_label.grid(row=2, column=0, padx=10, pady=10, sticky="w")
 word_entry = tk.Entry(root, width=40)
 word_entry.grid(row=2, column=1, padx=10, pady=10)
 
+# 邮费输入框
+postage_label = tk.Label(root, text="输入邮费:")
+postage_label.grid(row=3, column=0, padx=10, pady=10, sticky="w")
+
+postage_entry = tk.Entry(root, width=40)
+postage_entry.grid(row=3, column=1, padx=10, pady=10)
+
 # 运行按钮
 run_button = tk.Button(root, text="开始处理", command=run_processing)
-run_button.grid(row=3, column=0, columnspan=3, pady=20)
+run_button.grid(row=4, column=0, columnspan=3, pady=20)
 
 # 启动窗口
 root.mainloop()
