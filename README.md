@@ -5,5 +5,4 @@
 
 生成结果如图
 
-![image](https://github.com/user-attachments/assets/21417765-d487-4415-bb8b-6f189d70c775)
-
+![image](https://github.com/user-attachments/assets/88b1ac87-5c1f-4e6a-94fc-003c0123f446)
