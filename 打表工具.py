@@ -65,7 +65,7 @@ def process_excel(file_path, word_to_add, series_name, postage_fee):
             average_postage = average_postage.quantize(Decimal('0.01'), rounding=ROUND_UP)
 
             # 将人均邮费插入到第二行第二列单元格
-            df_first_three_columns.iloc[0, 1] = f"邮{average_postage}/人"  # 保留两位小数并进位处理
+            df_first_three_columns.iloc[0, 1] = f"邮{postage_fee}，{average_postage}/人"  # 保留两位小数并进位处理
 
             # 对第一列从第二行开始的每个单元格加上人均邮费
             for row_idx in range(1, len(df_first_three_columns)):
