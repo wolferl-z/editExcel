@@ -33,7 +33,7 @@ def process_excel(file_path, word_to_add, series_name, postage_fee):
             for col_idx in range(2, len(df.columns)):
                 # 如果该单元格的值大于 0，则在该单元格内容前面加上列名
                 if df.iloc[row_idx, col_idx] > 0:
-                    df.iloc[row_idx, col_idx] = str(df.columns[col_idx]) + str(df.iloc[row_idx, col_idx])
+                    df.iloc[row_idx, col_idx] = str(df.columns[col_idx]) + "*" + str(df.iloc[row_idx, col_idx])
 
         # 合并同一行从第三列开始的单元格内容，分隔符为“，”并生成新的一列
         df['制品'] = df.iloc[3:, 2:].apply(lambda row: ','.join(row.dropna().astype(str)), axis=1)
@@ -42,7 +42,7 @@ def process_excel(file_path, word_to_add, series_name, postage_fee):
         df.insert(2, '制品', df.pop('制品'))
 
         # 将前几列提取出来生成新的文件
-        df_first_three_columns = df.iloc[5:, :3]  # 提取前三列（从第五行开始）
+        df_first_three_columns = df.iloc[3:, :3]  # 提取前三列（从第五行开始）
 
         # 修改列名为指定的名称
         df_first_three_columns.columns = ['金额', 'cn', '制品']
