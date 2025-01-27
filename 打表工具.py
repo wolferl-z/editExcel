@@ -6,7 +6,6 @@ import subprocess
 import platform
 from decimal import Decimal, ROUND_UP
 
-
 # 处理 Excel 文件的函数
 def process_excel(file_path, word_to_add, series_name, postage_fee):
     try:
