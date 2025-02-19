@@ -15,7 +15,6 @@
 
 ![c4accc8c-764c-4ac2-a99f-cf49ae3252e2](https://github.com/user-attachments/assets/01e4fac4-4734-413e-87a6-7f795ae77909)
 
-在使用多表合并功能时，文件格式应与单表处理后的格式相同
 
 多表合并结果如下图
 
