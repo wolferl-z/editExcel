@@ -150,26 +150,20 @@ def run_processing():
 # 合并多个表格的函数
 def merge_multiple_files(file_paths, series_name, postage_fee):
     try:
-        merged_df = pd.DataFrame()  # 创建空的 DataFrame
+        merged_df = pd.DataFrame()  # 创建一个空的 DataFrame 用于存储合并后的数据
+
         for file_path in file_paths:
-            df = pd.read_excel(file_path, header=None)
-            df.columns = df.iloc[0]  # 将第一行作为列名
-            df = df.drop(index=0)  # 删除第一行
-            df = df.drop(index=1)  # 删除第二行
-
-            # 对相同 cn 的数据进行合并：金额相加，制品合并
-            df_grouped = df.groupby('cn').agg(
-                {'金额': 'sum', '制品': lambda x: ','.join(x)}
-            ).reset_index()
-
-            # 将合并后的数据添加到 merged_df
-            merged_df = pd.concat([merged_df, df_grouped], ignore_index=True)
+            # 对每个文件进行单表处理
+            word_to_add = ""  # 如果需要添加制品类型，可以在这里设置
+            df_processed = process_excel_and_return_df(file_path, word_to_add, series_name)
+            df_processed = df_processed.drop(index=0)  # 删除第一行
+            # 将处理后的数据添加到 merged_df
+            merged_df = pd.concat([merged_df, df_processed], ignore_index=True)
 
         # 检查是否有重复的 cn，如果有，则合并金额和制品
         merged_df_grouped = merged_df.groupby('cn').agg(
             {'金额': 'sum', '制品': lambda x: ','.join(x)}
         ).reset_index()
-
 
         # 交换金额和 cn 列的位置
         merged_df_grouped = merged_df_grouped[['金额', 'cn', '制品']]  # 交换金额和 cn 的位置
@@ -194,6 +188,23 @@ def merge_multiple_files(file_paths, series_name, postage_fee):
     except Exception as e:
         messagebox.showerror("错误", f"发生错误: {e}")
 
+# 辅助函数：处理单个文件并返回 DataFrame
+def process_excel_and_return_df(file_path, word_to_add, series_name):
+    try:
+        # 读取 Excel 文件
+        df = read_excel(file_path)
+        # 修改列名
+        df = modify_columns(df, word_to_add)
+        # 更新数据内容
+        df = update_data(df)
+        # 处理前三列数据
+        df_first_three_columns = process_first_three_columns(df, series_name, word_to_add)
+
+        return df_first_three_columns
+
+    except Exception as e:
+        messagebox.showerror("错误", f"处理文件 {file_path} 时发生错误: {e}")
+        return pd.DataFrame()  # 返回空的 DataFrame
 
 # 打开生成的文件
 def open_generated_file(file_path):
