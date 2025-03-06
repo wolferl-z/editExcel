@@ -4,6 +4,7 @@ import pandas as pd
 import os
 import subprocess
 import platform
+from PIL import Image, ImageTk
 from decimal import Decimal, ROUND_UP
 
 
@@ -265,8 +266,8 @@ def open_new_window():
     new_window.title("使用说明")
 
     # 设置新窗口的大小
-    new_window_width = 400
-    new_window_height = 300
+    new_window_width = 800
+    new_window_height = 600
 
     # 获取屏幕宽度和高度
     screen_width = new_window.winfo_screenwidth()
@@ -279,23 +280,38 @@ def open_new_window():
     # 设置窗口大小和位置
     new_window.geometry(f'{new_window_width}x{new_window_height}+{position_right}+{position_top}')
 
+    # 创建 Canvas 和滚动条
+    canvas = tk.Canvas(new_window)
+    scrollbar = tk.Scrollbar(new_window, orient="vertical", command=canvas.yview)
+    scrollable_frame = tk.Frame(canvas)
+
+    # 配置 Canvas
+    canvas.configure(yscrollcommand=scrollbar.set)
+    canvas.pack(side="left", fill="both", expand=True)
+    scrollbar.pack(side="right", fill="y")
+
+    # 将滚动区域绑定到 Canvas
+    canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+    scrollable_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+
     # 加载图片
     try:
-        image = Image.open("logo.png")  # 替换为你的图片路径
-        image = image.resize((150, 150), Image.ANTIALIAS)  # 调整图片大小
+        image = Image.open("README.jpg")  # 确保图片路径正确
+
+        # 将图片转换为 Tkinter 可用的格式
         photo = ImageTk.PhotoImage(image)
 
         # 创建 Label 用于显示图片
-        image_label = tk.Label(new_window, image=photo)
+        image_label = tk.Label(scrollable_frame, image=photo)
         image_label.image = photo  # 保持图片引用，避免被垃圾回收
         image_label.pack(pady=10)
     except Exception as e:
         # 如果图片加载失败，显示错误信息
-        error_label = tk.Label(new_window, text="图片加载失败", fg="red")
+        error_label = tk.Label(scrollable_frame, text=f"图片加载失败: {e}", fg="red")
         error_label.pack(pady=10)
 
     # 添加作者信息
-    author_label = tk.Label(new_window, text="作者：坐标系\n联系方式：2194970133@qq.com")
+    author_label = tk.Label(scrollable_frame, text="作者：坐标系\n联系方式：2194970133@qq.com")
     author_label.pack(pady=10)
 
 # 创建主窗口
