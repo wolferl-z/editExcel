@@ -6,6 +6,7 @@ import subprocess
 import platform
 from decimal import Decimal, ROUND_UP
 
+
 # 处理 Excel 文件的函数
 def process_excel(file_path, word_to_add, series_name, postage_fee):
     try:
@@ -258,6 +259,45 @@ def show_multi_table_processing():
     multi_table_frame.pack(fill="both", expand=True)
 
 
+def open_new_window():
+    # 创建新窗口
+    new_window = tk.Toplevel(root)
+    new_window.title("使用说明")
+
+    # 设置新窗口的大小
+    new_window_width = 400
+    new_window_height = 300
+
+    # 获取屏幕宽度和高度
+    screen_width = new_window.winfo_screenwidth()
+    screen_height = new_window.winfo_screenheight()
+
+    # 计算窗口位置，使其居中
+    position_top = (screen_height - new_window_height) // 2
+    position_right = (screen_width - new_window_width) // 2
+
+    # 设置窗口大小和位置
+    new_window.geometry(f'{new_window_width}x{new_window_height}+{position_right}+{position_top}')
+
+    # 加载图片
+    try:
+        image = Image.open("logo.png")  # 替换为你的图片路径
+        image = image.resize((150, 150), Image.ANTIALIAS)  # 调整图片大小
+        photo = ImageTk.PhotoImage(image)
+
+        # 创建 Label 用于显示图片
+        image_label = tk.Label(new_window, image=photo)
+        image_label.image = photo  # 保持图片引用，避免被垃圾回收
+        image_label.pack(pady=10)
+    except Exception as e:
+        # 如果图片加载失败，显示错误信息
+        error_label = tk.Label(new_window, text="图片加载失败", fg="red")
+        error_label.pack(pady=10)
+
+    # 添加作者信息
+    author_label = tk.Label(new_window, text="作者：坐标系\n联系方式：2194970133@qq.com")
+    author_label.pack(pady=10)
+
 # 创建主窗口
 root = tk.Tk()
 root.title("打表工具")
@@ -267,7 +307,7 @@ screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenheight()
 
 # 设置窗口的大小
-window_width = 550
+window_width = 500
 window_height = 350
 
 # 计算窗口位置，使其居中
@@ -352,9 +392,13 @@ single_button = tk.Button(switch_button_frame, text="单表处理", command=show
 single_button.grid(row=0, column=0, padx=10, pady=10)
 multi_button = tk.Button(switch_button_frame, text="多表合并", command=show_multi_table_processing)
 multi_button.grid(row=0, column=1, padx=10, pady=10)
+question_button = tk.Button(switch_button_frame, text="?", command=open_new_window)
+question_button.grid(row=0, column=2, padx=10, pady=10)
 
 switch_button_frame.pack(pady=10)
 single_table_frame.pack(fill="both", expand=True)
+
+
 
 # 启动窗口
 root.mainloop()
