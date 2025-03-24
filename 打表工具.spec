@@ -5,7 +5,7 @@ a = Analysis(
     ['打表工具.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[('README.jpg', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
