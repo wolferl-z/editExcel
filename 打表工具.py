@@ -247,18 +247,15 @@ def run_merge():
     # 调用多表合并函数并传递邮费参数
     merge_multiple_files(file_paths, series_name, postage_fee)
 
-
 # 显示单表处理界面
 def show_single_table_processing():
     single_table_frame.pack(fill="both", expand=True)
     multi_table_frame.pack_forget()
 
-
 # 显示多表合并界面
 def show_multi_table_processing():
     single_table_frame.pack_forget()
     multi_table_frame.pack(fill="both", expand=True)
-
 
 def open_new_window():
     # 创建新窗口
@@ -294,9 +291,20 @@ def open_new_window():
     canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
     scrollable_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
 
+    use_label = tk.Label(scrollable_frame, text="对于单表处理：\n"
+                                                "系列名（必填）：指谷子名，比如全职高手pop系列\n"
+                                                "制品类型（选填）：指谷子类型，如吧唧，拍立得，\n"
+                                                "如果上拼谷助手的时候是按同类型分着上（如吧唧拼盒）且只填了角色名没填制品类型就可以填在这里\n"
+                                                "如果是多个制品类型在同一表中，需要提前做好制品类型的处理工作\n"
+                                                "邮费（选填）：如果均邮超过两位小数，会自动进行四舍五入\n"
+                                                "对于多表处理：\n"
+                                                "直接把多个表的地址导入，其它与单表处理相同，但是不能添加制品类型了，需要在此之前就做好制品类型的处理工作",
+                         justify=tk.LEFT)
+    use_label.pack(pady=10)
+
     # 加载图片
     try:
-        image = Image.open("README.jpg")  # 确保图片路径正确
+        image = Image.open("C:\\Users\\13955\\getData\\editExcel\\README.jpg")  # 确保图片路径正确
 
         # 将图片转换为 Tkinter 可用的格式
         photo = ImageTk.PhotoImage(image)
@@ -323,7 +331,7 @@ screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenheight()
 
 # 设置窗口的大小
-window_width = 500
+window_width = 550
 window_height = 350
 
 # 计算窗口位置，使其居中
@@ -337,7 +345,7 @@ root.geometry(f'{window_width}x{window_height}+{position_right}+{position_top}')
 single_table_frame = tk.Frame(root)
 
 # 文件路径输入框及浏览按钮
-file_label = tk.Label(single_table_frame, text="选择 Excel 文件:")
+file_label = tk.Label(single_table_frame, text="选择 Excel 文件（必填）:")
 file_label.grid(row=0, column=0, padx=10, pady=10, sticky="w")
 
 file_entry = tk.Entry(single_table_frame, width=40)
@@ -347,21 +355,21 @@ browse_button = tk.Button(single_table_frame, text="浏览", command=browse_file
 browse_button.grid(row=0, column=2, padx=10, pady=10)
 
 # 系列名输入框
-series_label = tk.Label(single_table_frame, text="输入系列名:")
+series_label = tk.Label(single_table_frame, text="输入系列名（必填）:")
 series_label.grid(row=1, column=0, padx=10, pady=10, sticky="w")
 
 series_entry = tk.Entry(single_table_frame, width=40)
 series_entry.grid(row=1, column=1, padx=10, pady=10)
 
 # 制品类型输入框（允许为空）
-word_label = tk.Label(single_table_frame, text="输入制品类型:")
+word_label = tk.Label(single_table_frame, text="输入制品类型（选填）:")
 word_label.grid(row=2, column=0, padx=10, pady=10, sticky="w")
 
 word_entry = tk.Entry(single_table_frame, width=40)
 word_entry.grid(row=2, column=1, padx=10, pady=10)
 
 # 邮费输入框（允许为空）
-postage_label = tk.Label(single_table_frame, text="输入邮费:")
+postage_label = tk.Label(single_table_frame, text="输入邮费（选填）:")
 postage_label.grid(row=3, column=0, padx=10, pady=10, sticky="w")
 
 postage_entry = tk.Entry(single_table_frame, width=40)
@@ -375,7 +383,7 @@ run_button.grid(row=4, column=0, columnspan=3, pady=20)
 multi_table_frame = tk.Frame(root)
 
 # 文件路径输入框及浏览按钮
-file_label = tk.Label(multi_table_frame, text="选择多个 Excel 文件:")
+file_label = tk.Label(multi_table_frame, text="选择多个 Excel 文件（必填）:")
 file_label.grid(row=0, column=0, padx=10, pady=10, sticky="w")
 
 file_list = tk.Listbox(multi_table_frame, height=4, width=40)
@@ -385,14 +393,14 @@ browse_button = tk.Button(multi_table_frame, text="浏览", command=browse_files
 browse_button.grid(row=0, column=2, padx=10, pady=10)
 
 # 系列名输入框
-series_label_multi = tk.Label(multi_table_frame, text="输入系列名:")
+series_label_multi = tk.Label(multi_table_frame, text="输入系列名（必填）:")
 series_label_multi.grid(row=1, column=0, padx=10, pady=10, sticky="w")
 
 series_entry_multi = tk.Entry(multi_table_frame, width=40)
 series_entry_multi.grid(row=1, column=1, padx=10, pady=10)
 
 # 邮费输入框
-postage_label_multi = tk.Label(multi_table_frame, text="输入邮费:")
+postage_label_multi = tk.Label(multi_table_frame, text="输入邮费（选填）:")
 postage_label_multi.grid(row=2, column=0, padx=10, pady=10, sticky="w")
 
 postage_entry_multi = tk.Entry(multi_table_frame, width=40)
@@ -413,8 +421,6 @@ question_button.grid(row=0, column=2, padx=10, pady=10)
 
 switch_button_frame.pack(pady=10)
 single_table_frame.pack(fill="both", expand=True)
-
-
 
 # 启动窗口
 root.mainloop()
